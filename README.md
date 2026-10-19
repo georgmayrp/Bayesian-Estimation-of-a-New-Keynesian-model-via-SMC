@@ -1,22 +1,21 @@
 # Bayesian Estimation of a New Keynesian DSGE Model with Sequential Monte Carlo
 
-**A Python-based replication study of the New Keynesian DSGE model and Bayesian Sequential Monte Carlo (SMC) estimation approach discussed in Herbst & Schorfheide (2016).**
+A Python-based replication study of the New Keynesian DSGE model and Bayesian Sequential Monte Carlo (SMC) estimation approach discussed in Herbst & Schorfheide (2016).
 
-This project combines **macroeconomic modeling**, **state-space methods**, **Kalman filtering**, and **particle-based Bayesian inference** to estimate structural parameters from US macroeconomic data. The resulting posterior estimates are compared with published reference results.
+This project estimates structural parameters from US macroeconomic data. The resulting posterior estimates are compared with published reference results.
 
-**At a glance:**
 
 | | |
 |---|---|
-| **Model** | Small New Keynesian Dynamic Stochastic General Equilibrium (DSGE) model |
-| **Estimation** | Bayesian Sequential Monte Carlo with likelihood tempering |
-| **Implementation** | Python |
-| **Estimated parameters** | 13 |
-| **SMC configuration** | 5,000 particles; 400 tempering stages |
-| **Sample** | US quarterly data, 1983 Q1–2002 Q4 |
-| **Observed series** | Output gap, inflation, nominal interest rate (as labeled in the report) |
+| Model | Small New Keynesian Dynamic Stochastic General Equilibrium (DSGE) model |
+| Estimation | Bayesian Sequential Monte Carlo with likelihood tempering |
+| Implementation | Python |
+| Estimated parameters | 13 |
+| SMC configuration | 5,000 particles; 400 tempering stages |
+| Sample | US quarterly data, 1983 Q1–2002 Q4 |
+| Observed series | Output gap, inflation, nominal interest rate  |
 
-> **Research context:** This is an independent replication exercise based on Herbst & Schorfheide (2016), not an official implementation accompanying the book.
+> Research context: This is an independent replication exercise based on Herbst & Schorfheide (2016), not an official implementation accompanying the book.
 
 ## Research objective
 
@@ -30,12 +29,12 @@ Evaluating the likelihood for a candidate parameter vector requires solving the 
 
 ## Economic model
 
-The report implements a small **New Keynesian DSGE model** featuring:
+The report implements a small New Keynesian DSGE model using:
 
-- An **intertemporal IS (Euler) equation** governing aggregate demand.
-- A **New Keynesian Phillips curve** linking inflation and economic activity.
-- A **Taylor-style monetary policy rule** with interest-rate smoothing.
-- **Autoregressive structural shocks** affecting the model's dynamics.
+- An intertemporal IS (Euler) equation  .
+- A New Keynesian Phillips curve  .
+- A Taylor rule with interest-rate smoothing.
+- AR1 structural shocks affecting the model's dynamics.
 
 The parameter vector contains 13 structural, persistence, and volatility parameters:
 
@@ -44,20 +43,20 @@ $$
 \rho_R, \rho_g, \rho_z, \sigma_R, \sigma_g, \sigma_z).
 $$
 
-The solved model is expressed in state-space form, enabling likelihood evaluation using a **Kalman filter**.
+The solved model is expressed in state-space form, enabling likelihood evaluation using a Kalman filter.
 
 ## Estimation workflow
 
 The implementation described in the report follows this sequence:
 
-1. **Initialize particles:** Draw parameter vectors from their prior distributions.
-2. **Solve the DSGE system:** Use a `gensys`-style solution to obtain a linear rational-expectations state transition.
-3. **Construct the state-space representation:** Map latent states to observed macroeconomic variables and specify structural and measurement uncertainty.
-4. **Evaluate likelihoods:** Apply the Kalman filter to compute the data likelihood for each parameter vector.
-5. **Temper the likelihood:** Move gradually from the prior toward the posterior via intermediate distributions.
-6. **Reweight and resample:** Update particle weights, calculate effective sample size (ESS), and use **systematic resampling** when ESS falls below its threshold.
-7. **Mutate particles:** Apply **Random-Walk Metropolis–Hastings (RWMH)** steps, using a proposal covariance informed by the particle cloud.
-8. **Summarize the posterior:** Calculate posterior means, credible intervals, diagnostic plots, and parameter relationships.
+1. Initialize particles: Draw parameter vectors from their prior distributions.
+2. Solve the DSGE system: Use a `gensys`-implementation solution to obtain a linear rational-expectations state transition.
+3. Construct the state-space representation: Maps latent states to observed macroeconomic variables and specify structural and measurement uncertainty.
+4. Evaluate likelihoods: Apply the Kalman filter to compute the data likelihood for each parameter vector.
+5. Temper the likelihood: Moves gradually from the prior toward the posterior.
+6. Reweight and resample: Update particle weights, calculate effective sample size (ESS), and use systematic resampling when ESS falls below its threshold.
+7. Mutate particles: Apply Random-Walk Metropolis–Hastings (RWMH) steps, using a proposal covariance informed by the particle cloud.
+8. Summarize the posterior: Calculate posterior means, diagnostic plots, and parameter relationships.
 
 At tempering stage $t$, the target distribution is:
 
@@ -66,17 +65,14 @@ $$
 \qquad 0=\phi_0<\cdots<\phi_K=1.
 $$
 
-### Methodology demonstrated
-
-`Python` · `Bayesian econometrics` · `DSGE modeling` · `Sequential Monte Carlo` · `Kalman filtering` · `State-space models` · `Metropolis–Hastings` · `Posterior diagnostics`
 
 ## Results
 
-The report presents an SMC run using **5,000 particles** and **400 tempering stages**. The posterior estimates are compared with the reference values in **Herbst & Schorfheide (2016), Table 4.1**.
+The report presents an SMC run using 5,000 particles and 400 tempering stages. The posterior estimates are compared with the reference values in Herbst & Schorfheide (2016), Table 4.1.
 
 ### Posterior estimates vs. published reference
 
-The interval column reports the **5th–95th percentile range** of the estimated posterior distribution.
+The interval column reports the 5th–95th percentile range of the estimated posterior distribution.
 
 | Parameter | SMC posterior mean | SMC 5%–95% interval | Herbst & Schorfheide mean |
 |:--|--:|:--:|--:|
@@ -94,7 +90,6 @@ The interval column reports the **5th–95th percentile range** of the estimated
 | $\sigma_g$ | 0.6551 | [0.5669, 0.7558] | 0.71 |
 | $\sigma_z$ | 0.1997 | [0.1651, 0.2401] | 0.31 |
 
-**Interpretation:** Several estimates are close to the published reference means (for example, $\rho_R$, $\rho_g$, and $\sigma_R$). Differences remain for some parameters, notably $\tau$ and $\sigma_z$. The comparison is presented as a replication diagnostic, **not** as evidence of exact numerical agreement.
 
 ### Prior and posterior distributions
 
@@ -113,21 +108,18 @@ The effective sample size shows when the particle distribution becomes concentra
 <details>
 <summary><strong>Additional posterior diagnostics and historical decomposition</strong></summary>
 
-**Parameter trace plots across SMC stages**
+Parameter trace plots across SMC stages
 
 ![SMC parameter trace plots](figures/smc_trace_plots.png)
 
-**Posterior pairwise joint distributions**
+Posterior pairwise joint distributions
 
 ![Pairwise posterior joint densities](figures/posterior_joint_distributions.png)
 
-**Posterior parameter correlations**
+Posterior parameter correlations
 
 ![Posterior correlation matrix](figures/posterior_correlations.png)
 
-**Historical decomposition of the three observables**
-
-![Historical decomposition](figures/historical_decomposition.png)
 
 </details>
 
@@ -146,7 +138,7 @@ The [technical overview (PDF)](docs/DSGE_SMC_overview.pdf) explains the model eq
 | `log_posterior_tempered(theta, phi)` | Combine prior and tempered likelihood |
 | SMC loop | Reweight, monitor ESS, resample, and mutate particles |
 
-**Reproducing the computation:** This README is based on the accompanying research overview. The PDF documents the estimation pipeline and results, but it does **not** contain complete executable source files, a dependency list, or data-loading instructions. Upload the Python implementation and any shareable data separately; then add the exact installation and run commands here.
+Reproducing the computation: This README is based on the accompanying research overview. The PDF documents the estimation pipeline and results, but it does not contain complete executable source files, a dependency list, or data-loading instructions. Upload the Python implementation and any shareable data separately; then add the exact installation and run commands here.
 
 ## Reference
 
